@@ -30,10 +30,16 @@ namespace JenkinDemo.Controllers
             .ToArray();
         }
 
-        [HttpGet("JenkinTestAI")]
-        public IActionResult Get2()
+        [HttpGet("JenkinTest1")]
+        public IActionResult Get1()
         {
             return Ok("Test 1");
+        }
+
+        [HttpGet("JenkinTestA2")]
+        public IActionResult Get2()
+        {
+            return Ok("Test 2");
         }
     }
 }
