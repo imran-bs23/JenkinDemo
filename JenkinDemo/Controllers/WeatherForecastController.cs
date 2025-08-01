@@ -29,5 +29,11 @@ namespace JenkinDemo.Controllers
             })
             .ToArray();
         }
+
+        [HttpGet(Name = "JenkinTestAI")]
+        public IActionResult Get2()
+        {
+            return Ok("Test 1");
+        }
     }
 }
