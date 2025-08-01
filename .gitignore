@@ -409,6 +409,3 @@ FodyWeavers.xsd
 *.ntvs*
 *.njsproj
 *.sw?
-
-# Ignore all appsettings json files
-**/appsettings*.json
