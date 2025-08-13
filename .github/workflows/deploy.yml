@@ -1,0 +1,67 @@
+name: Deploy CICDDemo on Self-Hosted
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish project
+        run: dotnet publish -c Release -o ./publish
+
+      - name: Backup existing publish folder
+        shell: powershell
+        run: |
+          $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+          $backupPath = "C:\Publish\CICDDemo_Backup\$timestamp"
+          if (Test-Path "C:\Publish\CICDDemo") {
+            New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
+            Copy-Item -Path "C:\Publish\CICDDemo\*" -Destination $backupPath -Recurse -Force
+            Write-Host "Backup created at $backupPath"
+          } else {
+            Write-Host "No existing publish folder to backup."
+          }
+
+      - name: Stop IIS App Pool
+        shell: powershell
+        run: |
+          Import-Module WebAdministration
+          $poolName = "CICDDemo"
+          $poolState = (Get-WebAppPoolState -Name $poolName).Value
+          if ($poolState -eq "Started") {
+              Stop-WebAppPool -Name $poolName
+              Write-Host "IIS App Pool '$poolName' stopped."
+          } else {
+              Write-Host "IIS App Pool '$poolName' was already stopped."
+          }
+
+      - name: Deploy to publish folder
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Path "C:\Publish\CICDDemo" -Force | Out-Null
+          Copy-Item -Path ".\publish\*" -Destination "C:\Publish\CICDDemo" -Recurse -Force
+          Write-Host "Deployment completed successfully."
+
+      - name: Start IIS App Pool
+        shell: powershell
+        run: |
+          Import-Module WebAdministration
+          $poolName = "CICDDemo"
+          Start-WebAppPool -Name $poolName
+          Write-Host "IIS App Pool '$poolName' started successfully."
