@@ -53,11 +53,5 @@ namespace CICDDemo.Controllers
         {
             return Ok("Test 4");
         }
-
-        [HttpGet("TestA5")]
-        public IActionResult Get5()
-        {
-            return Ok("Test 5");
-        }
     }
 }
