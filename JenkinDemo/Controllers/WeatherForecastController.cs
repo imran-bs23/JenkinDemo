@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace JenkinDemo.Controllers
+namespace CICDDemo.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -30,19 +30,19 @@ namespace JenkinDemo.Controllers
             .ToArray();
         }
 
-        [HttpGet("JenkinTest1")]
+        [HttpGet("Test1")]
         public IActionResult Get1()
         {
             return Ok("Test 1");
         }
 
-        [HttpGet("JenkinTestA2")]
+        [HttpGet("TestA2")]
         public IActionResult Get2()
         {
             return Ok("Test 2");
         }
 
-        [HttpGet("JenkinTestA3")]
+        [HttpGet("TestA3")]
         public IActionResult Get3()
         {
             return Ok("Test 3");

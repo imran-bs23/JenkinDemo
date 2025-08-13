@@ -1,4 +1,4 @@
-namespace JenkinDemo
+namespace CICDDemo
 {
     public class WeatherForecast
     {
