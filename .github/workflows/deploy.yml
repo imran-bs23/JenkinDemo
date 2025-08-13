@@ -12,9 +12,6 @@ jobs:
     steps:
       - name: Checkout code with submodules
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          token: ${{ secrets.GH_PAT }}
 
       - name: Restore dependencies
         run: dotnet restore
