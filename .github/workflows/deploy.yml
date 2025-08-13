@@ -35,11 +35,15 @@ jobs:
             Write-Host "No existing publish folder to backup."
           }
 
-      - name: Stop IIS App Pool
+      - name: Stop IIS App Pool and put site offline
         shell: powershell
         run: |
           Import-Module WebAdministration
           $poolName = "CICDDemo"
+          # Put app offline so IIS unloads DLLs
+          $offlineFile = "C:\Publish\CICDDemo\App_Offline.htm"
+          Set-Content -Path $offlineFile -Value "<h1>Site is temporarily offline for deployment.</h1>"
+
           $poolState = (Get-WebAppPoolState -Name $poolName).Value
           if ($poolState -eq "Started") {
               Stop-WebAppPool -Name $poolName
@@ -48,6 +52,9 @@ jobs:
               Write-Host "IIS App Pool '$poolName' was already stopped."
           }
 
+          # Give IIS a moment to release file locks
+          Start-Sleep -Seconds 5
+
       - name: Deploy to publish folder
         shell: powershell
         run: |
@@ -55,10 +62,15 @@ jobs:
           Copy-Item -Path ".\publish\*" -Destination "C:\Publish\CICDDemo" -Recurse -Force
           Write-Host "Deployment completed successfully."
 
-      - name: Start IIS App Pool
+      - name: Start IIS App Pool and remove offline file
         shell: powershell
         run: |
           Import-Module WebAdministration
           $poolName = "CICDDemo"
+          $offlineFile = "C:\Publish\CICDDemo\App_Offline.htm"
+          if (Test-Path $offlineFile) {
+              Remove-Item $offlineFile -Force
+          }
           Start-WebAppPool -Name $poolName
           Write-Host "IIS App Pool '$poolName' started successfully."
+  
