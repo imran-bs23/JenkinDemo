@@ -35,5 +35,11 @@ namespace CICDDemo.Controllers
         {
             return Ok("Test 1");
         }
+
+        [HttpGet("Test2")]
+        public IActionResult Get2()
+        {
+            return Ok("Test 2");
+        }
     }
 }
